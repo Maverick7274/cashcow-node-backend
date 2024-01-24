@@ -23,29 +23,17 @@ const userSchema = new mongoose.Schema({
         min: [8, "Please provide a password of atleast 8 Characters"],
         select: false
     },
-    age: {
-        type: Number,
-        required: [true, "Please provide your age"],
-        min: [7, "You must be atleast 7 years old to register"],
-        max: [130, "You must be under 130 years old to register"]
+    dob: {
+        type: Date,
+        required: [true, "Please provide your Date of Birth"],
     },
     primaryCurrency: {
         type: String,
         required: [true, "Please select your primary currency"],
     },
-    occupation: {
+    ocupation: {
         type: String,
-        required: [true, "Please enter your occupation"],
-    },
-    avatar: {
-        public_id: {
-            type: String,
-            required: true
-        },
-        url: {
-            type: String,
-            required: true
-        }
+        required: [true, "Please enter your ocupation"],
     },
     role: {
         type: String,
