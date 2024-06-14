@@ -1,6 +1,6 @@
 class ErrorHandler extends Error {
-
-    constructor (message, statusCode) {
+    statusCode: number;
+    constructor (message: string, statusCode: number) {
 
         super(message)
         this.statusCode = statusCode;
@@ -9,4 +9,4 @@ class ErrorHandler extends Error {
     }
 }
 
-module.exports = ErrorHandler;
+export default ErrorHandler;

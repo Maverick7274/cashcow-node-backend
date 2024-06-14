@@ -1,14 +1,12 @@
-const Transaction = require('../models/transactionModel');
-const ErrorHandler = require('../utils/errorHandler');
-const catchAsyncErrors = require('../middleware/catchAsyncErrors');
-const ApiFeatures = require('../utils/apiFeatures');
-
-
-
+import { Request, Response, NextFunction } from 'express';
+import Transaction from '../models/transactionModel.js';
+import ErrorHandler from '../utils/errorHandler.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import ApiFeatures from '../utils/apiFeatures.js';
 
 
 // Create new transaction => /api/v1/transaction/new 
-exports.createTransaction = catchAsyncErrors(async (req, res, next) => {
+export const createTransaction = catchAsyncErrors(async (req:any, res:Response, next:NextFunction) => {
 
         req.body.user = req.user.id;
     
@@ -24,10 +22,8 @@ exports.createTransaction = catchAsyncErrors(async (req, res, next) => {
 
 
 
-
-
 // Update transaction details => /api/v1/transaction/:id   -- ADMIN ONLY
-exports.updateTransaction = catchAsyncErrors( async (req, res, next) => {
+export const updateTransaction = catchAsyncErrors( async (req: Request, res: Response, next: NextFunction) => {
 
     let transaction = await Transaction.findById(req.params.id);
 
@@ -51,7 +47,7 @@ exports.updateTransaction = catchAsyncErrors( async (req, res, next) => {
 
 
 // Delete transaction => /api/v1/transaction/:id   -- ADMIN ONLY
-exports.deleteTransaction = catchAsyncErrors(async (req, res, next) => {
+export const deleteTransaction = catchAsyncErrors(async (req: Request, res: Response, next:NextFunction) => {
 
     const transaction = await Transaction.findById(req.params.id);
 
@@ -72,7 +68,7 @@ exports.deleteTransaction = catchAsyncErrors(async (req, res, next) => {
 
 
 // Fetch single transaction details => /api/v1/transaction/:id
-exports.getSingleTransaction = catchAsyncErrors(async (req, res, next) => {
+export const getSingleTransaction = catchAsyncErrors(async (req: Request, res: Response, next:NextFunction) => {
     
     const transaction = await Transaction.findById(req.params.id);
 
@@ -90,7 +86,7 @@ exports.getSingleTransaction = catchAsyncErrors(async (req, res, next) => {
 
 
 //  Fetch all transaction details => /api/v1/transactions/
-exports.getAllTransactions = catchAsyncErrors(async (req, res) => {
+export const getAllTransactions = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
 
     const resultPerPage = 5;
     const transactionCount = await Transaction.countDocuments();

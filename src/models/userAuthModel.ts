@@ -1,10 +1,12 @@
-const mongoose = require("mongoose")
-const validator = require("validator")
-const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
+import mongoose from "mongoose";
+import validator from "validator";
+import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
-const userSchema = new mongoose.Schema({
+import { IUser } from "../interfaces/schemaInterfaces.js";
+
+const userSchema = new mongoose.Schema<IUser>({
 
     name: {
         type: String,
@@ -59,14 +61,14 @@ userSchema.pre("save", async function (next){
 
 
 // For comparing hash and password
-userSchema.methods.comparePassword = async function(enteredPassword) {
+userSchema.methods.comparePassword = async function(enteredPassword: string) {
     return await bcryptjs.compare(enteredPassword, this.password);
 }
 
 
 // To generate a JWT token
 userSchema.methods.getJWTToken = function () {
-    return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    return jwt.sign({ id: this._id }, process.env.JWT_SECRET as string, {
         expiresIn: process.env.JWT_EXPIRES
     })
 }
@@ -89,4 +91,5 @@ userSchema.methods.resetPasswordTokenGenerator = function () {
 
 
 
-module.exports = mongoose.model("User", userSchema);
+const userModel = mongoose.model("User", userSchema);
+export default userModel;

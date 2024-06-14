@@ -1,19 +1,20 @@
-const ErrorHandler = require("../utils/errorHandler");
-const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const User = require("../models/userModel");
-const sendToken = require("../utils/generateJWT");
-const sendMail = require("../utils/sendMail");
-const crypto = require("crypto");
+import { NextFunction, Request, Response } from "express";
+import ErrorHandler from "../utils/errorHandler.js";
+import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
+import User from "../models/userAuthModel.js";
+import sendToken from "../utils/generateJWT.js";
+import sendMail from "../utils/sendMail.js";
+import crypto from "crypto";
 
 
 
 // Register a User
-exports.registerUser = catchAsyncErrors(async (req, res, next) => {
+export const registerUser = catchAsyncErrors(async (req:Request, res:Response, next:NextFunction) => {
 
-    const {username, email, password, dob, primaryCurrency, ocupation} = req.body;
+    const {name, email, password, dob, primaryCurrency, ocupation} = req.body;
 
     const user = await User.create({
-        name: username,
+        name,
         email,
         password,
         dob,
@@ -29,7 +30,7 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
 
 
 // Login User
-exports.loginUser = catchAsyncErrors(async (req, res, next) => {
+export const loginUser = catchAsyncErrors(async (req:Request, res:Response, next:NextFunction) => {
 
     const {email, password} = req.body
 
@@ -50,7 +51,7 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 
 
 // Logout User
-exports.logoutUser = catchAsyncErrors(async (req, res, next) => {
+export const logoutUser = catchAsyncErrors(async (req:Request, res:Response, next:NextFunction) => {
 
     res.cookie("token", null, {
         expires: new Date(Date.now()),
@@ -68,7 +69,7 @@ exports.logoutUser = catchAsyncErrors(async (req, res, next) => {
 
 // Forgot password
 
-exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
+export const forgotPassword = catchAsyncErrors(async (req:Request, res:Response, next:NextFunction) => {
 
     const user = await User.findOne({email: req.body.email});
 
@@ -100,7 +101,7 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
         })
 
     }
-    catch (error){
+    catch (error: any){
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
 
@@ -119,7 +120,7 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
 // Reset Password
 
-exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
+export const resetPassword = catchAsyncErrors(async (req:Request, res:Response, next:NextFunction) => {
  
     const resetPasswordToken = crypto
     .createHash("sha256")
@@ -141,8 +142,10 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
     }
 
     user.password = req.body.password;
-    this.resetPasswordToken = undefined;
-    this.resetPasswordExpire = undefined;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    // this.resetPasswordToken = undefined;
+    // this.resetPasswordExpire = undefined;
 
     await user.save();
 
@@ -155,9 +158,13 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
 
 // Get User Details
 
-exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
+export const getUserDetails = catchAsyncErrors(async (req:any, res:Response, next:NextFunction) => {
 
     const user = await User.findById(req.user.id);
+    
+    if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+    }
 
     res.status(201).json({
         success: true,
@@ -171,9 +178,13 @@ exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
 
 // Update user password
 
-exports.updateUserPassword = catchAsyncErrors(async (req, res, next) => {
+export const updateUserPassword = catchAsyncErrors(async (req:any, res:Response, next:NextFunction) => {
 
     const user = await User.findById(req.user.id).select("+password");
+
+    if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+    }
 
     const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
 
@@ -195,7 +206,7 @@ exports.updateUserPassword = catchAsyncErrors(async (req, res, next) => {
 
 // Update User Profile
 
-exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
+export const updateUserProfile = catchAsyncErrors(async (req:any, res:Response, next:NextFunction) => {
     
         const newUserData = {
             name: req.body.name,
@@ -219,7 +230,7 @@ exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
 
 // Get all Users (admin)
 
-exports.getAllUsers = catchAsyncErrors(async (req, res, next) => {
+export const getAllUsers = catchAsyncErrors(async (req:Request, res:Response, next:NextFunction) => {
     
         const users = await User.find();
     
@@ -233,12 +244,12 @@ exports.getAllUsers = catchAsyncErrors(async (req, res, next) => {
 
 // Get Specific User Details (admin)
 
-exports.getOneUser = catchAsyncErrors(async (req, res, next) => {
+export const getOneUser = catchAsyncErrors(async (req:Request, res:Response, next:NextFunction) => {
     
     const users = await User.findById(req.params.id);
 
     if (!users){
-        return next(new ErrorHandler(`User not found with id: ${req.params.id}`));
+        return next(new ErrorHandler(`User not found with id: ${req.params.id}`, 400));
     }
 
     res.status(201).json({

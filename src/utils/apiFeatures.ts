@@ -1,6 +1,7 @@
 class ApiFeatures{
-
-    constructor(query, queryStr){
+    query : any;
+    queryStr : any;
+    constructor(query :any, queryStr :any){
         this.query = query
         this.queryStr = queryStr
     }
@@ -35,7 +36,7 @@ class ApiFeatures{
         return this
     }
 
-    pagination(resultPerPage){
+    pagination(resultPerPage : number){
         
         const currentPage = Number(this.queryStr.page) || 1;
         const skip = resultPerPage * (currentPage - 1);
@@ -47,4 +48,4 @@ class ApiFeatures{
 
 }
 
-module.exports = ApiFeatures;
+export default ApiFeatures;

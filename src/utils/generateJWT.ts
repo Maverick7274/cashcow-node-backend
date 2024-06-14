@@ -1,6 +1,8 @@
 // Creating and Saving Cookie
 
-const sendToken = async function (user, statusCode, res){
+import { Response } from "express";
+
+const sendToken = async function (user: any, statusCode:number, res:Response){
 
     const token = await user.getJWTToken();
 
@@ -8,7 +10,7 @@ const sendToken = async function (user, statusCode, res){
     const options = {
 
         httpOnly: true,
-        expires: new Date(Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + Number(process.env.COOKIE_EXPIRES) * 24 * 60 * 60 * 1000),
         secure: false,
     }
 
@@ -23,4 +25,4 @@ const sendToken = async function (user, statusCode, res){
 } 
 
 
-module.exports = sendToken;
+export default sendToken;

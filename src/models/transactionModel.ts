@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+import { ITransaction } from "../interfaces/schemaInterfaces.js";
 
-const transactionSchema = new mongoose.Schema({
+const transactionSchema = new mongoose.Schema<ITransaction>({
     name: {
         type: String,
         required: [true, "Please enter transaction name"],
@@ -18,12 +19,12 @@ const transactionSchema = new mongoose.Schema({
         required: [true, "Please select category for this transaction"],
     },
     user:{
-        type: mongoose.Schema.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
     family: {
-        type: mongoose.Schema.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Family",
     },
     createdAt: {
@@ -32,4 +33,5 @@ const transactionSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("Transaction", transactionSchema);
+const Transaction = mongoose.model("Transaction", transactionSchema);
+export default Transaction;
